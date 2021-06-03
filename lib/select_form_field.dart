@@ -141,6 +141,7 @@ class SelectFormField extends FormField<String> {
     this.items,
     String? initialValue,
     FocusNode? focusNode,
+    Function? updateStateFormField,
     InputDecoration? decoration,
     TextInputType? keyboardType,
     TextCapitalization textCapitalization = TextCapitalization.none,
@@ -206,7 +207,10 @@ class SelectFormField extends FormField<String> {
           //autovalidate: autovalidate,
           enabled: enabled,
           builder: (FormFieldState<String> field) {
-            final _SelectFormFieldState state = field as _SelectFormFieldState;
+            final SelectFormFieldState state = field as SelectFormFieldState;
+            if(updateStateFormField != null){
+              updateStateFormField(state);
+            }
 
             final InputDecoration effectiveDecoration = (decoration ??
                 InputDecoration(
@@ -239,10 +243,10 @@ class SelectFormField extends FormField<String> {
               if (readOnly == false) {
                 switch (peType) {
                   case SelectFormFieldType.dialog:
-                    lfOnTap = state._showSelectFormFieldDialog;
+                    lfOnTap = state.showSelectFormFieldDialog;
                     break;
                   default:
-                    lfOnTap = state._showSelectFormFieldMenu;
+                    lfOnTap = state.showSelectFormFieldMenu;
                 }
               }
 
@@ -401,10 +405,10 @@ class SelectFormField extends FormField<String> {
   final List<Map<String, dynamic>>? items;
 
   @override
-  _SelectFormFieldState createState() => _SelectFormFieldState();
+  SelectFormFieldState createState() => SelectFormFieldState();
 }
 
-class _SelectFormFieldState extends FormFieldState<String> {
+class SelectFormFieldState extends FormFieldState<String> {
   TextEditingController _labelController = TextEditingController();
   TextEditingController? _stateController;
   Widget? _icon;
@@ -512,7 +516,7 @@ class _SelectFormFieldState extends FormFieldState<String> {
     didChange(value);
   }
 
-  Future<void> _showSelectFormFieldMenu() async {
+  Future<void> showSelectFormFieldMenu() async {
     String lvPicked = await showMenu<dynamic>(
       context: context,
       position: _buttonMenuPosition(context),
@@ -542,7 +546,7 @@ class _SelectFormFieldState extends FormFieldState<String> {
     }
   }
 
-  Future<void> _showSelectFormFieldDialog() async {
+  Future<void> showSelectFormFieldDialog() async {
     Map<String, dynamic> lvPicked = await showDialog<dynamic>(
       context: context,
       builder: (BuildContext context) {
